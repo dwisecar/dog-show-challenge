@@ -1,11 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     getDogs();
   })
+  
   function getDogs() {
     fetch (`http://localhost:3000/dogs`)
     .then (res => res.json())
     .then (dogs => renderDogs(dogs))
   }
+
   function renderDogs(dogs) {
     let table = document.getElementById('table-body')
     dogs.forEach (dog => {
@@ -20,12 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
       let editBtn = document.createElement('button')
       editBtn.innerText= 'Edit Dog'
       editBtn.setAttribute('id', dog.id)
+      editBtn.setAttribute('class', 'edit-btn');
       editBtn.addEventListener('click', handleEdit)
       tdEdit.appendChild(editBtn)
       tr.append(tdName, tdBreed, tdSex, tdEdit)
       table.appendChild(tr)
     })
   }
+
   function handleEdit(e) {
     let dogToEdit = e.target.id
     let form = document.getElementById('dog-form')
@@ -36,12 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
     formName.value = row.children[0].innerText
     formBreed.value = row.children[1].innerText
     formSex.value = row.children[2].innerText
+    disableButtons()
     form.addEventListener('submit', (e)=> {
       updateDog(e, dogToEdit)
     })
   }
-  function updateDog(e, dog)
-  {
+
+  function updateDog(e, dog){
     e.preventDefault()
     fetch (`http://localhost:3000/dogs/${dog}`, {
       method: 'PATCH',
@@ -56,11 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     })
     .then (res => res.json())
-    .then (dog => {
+    .then (() => {
       clearTable()
       getDogs()
     })
   }
+
   function clearTable() {
     let table = document.getElementById('table-body')
     while (table.firstElementChild) {
@@ -68,5 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
         {
           table.firstElementChild.remove()
         }
+    }
+  }
+
+  function disableButtons() {
+    const buttons = document.getElementsByClassName('edit-btn')
+    
+    for(const btn of buttons){
+      btn.disabled = true;
     }
   }
